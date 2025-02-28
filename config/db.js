@@ -1,19 +1,20 @@
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
+const mysql = require("mysql2");
+const dotenv = require("dotenv");
+dotenv.config();
 
-async function createReferral() {
-  const referral = await prisma.referral.create({
-    data: {
-      referrerName: "John Doe",
-      referrerEmail: "john@example.com",
-      referrerPhone: "9876543210",
-      refereeName: "Jane Smith",
-      refereeEmail: "jane@example.com",
-      refereePhone: "8765432109",
-      course: "Full Stack Development",
-    },
-  });
-  console.log("Referral Created:", referral);
-}
+const connection = mysql.createConnection({
+  host: process.env.DB_HOST, // or use DATABASE_URL if using a full connection string
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  database: process.env.DB_NAME,
+  connectionLimit: 10,
+});
 
-createReferral();
+connection.connect((err) => {
+  if (err) {
+    console.log("Error conecting to the database: ", err.stack());
+  }
+  console.log("Connected to the MySQL database.");
+});
+
+module.exports = connection;
